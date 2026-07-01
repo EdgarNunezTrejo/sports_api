@@ -17,7 +17,7 @@ public class TeamService(TeamRepository repository, LeagueRepository leagueRepos
 
     public async Task<Team> CreateTeamAsync(string name, Guid leagueId)
     {
-        var leagueExists = await leagueRepository.LeagueExistsAsync(leagueId);
+        var leagueExists = await leagueRepository.ExistsAsync(leagueId);
         if (!leagueExists)
         {
             return null;

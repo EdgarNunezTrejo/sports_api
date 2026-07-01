@@ -24,7 +24,7 @@ public class MatchService(
         if (homeTeamId == awayTeamId)
             return (null, "A team cannot play against itself");
 
-        var leagueExists = await leagueRepository.LeagueExistsAsync(leagueId);
+        var leagueExists = await leagueRepository.ExistsAsync(leagueId);
         if (!leagueExists)
             return (null, "The specified league does not exist");
         var homeTeamLeagueId = await teamRepository.GetLeagueIdAsync(homeTeamId);

@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using sports_api.Data;
+using sports_api.Interfaces;
 using sports_api.Models;
 
 namespace sports_api.Repositories;
 
-public class ChatMessageRepository(AppDbContext context)
+public class ChatMessageRepository(AppDbContext context): IChatMessageRepository
 {
     public async Task<List<ChatMessage>> GetByConversationIdAsync(Guid conversationId)
     {

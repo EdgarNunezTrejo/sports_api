@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using sports_api.Data;
+using sports_api.Interfaces;
 using sports_api.Models;
 
 namespace sports_api.Repositories;
 
-public class LeagueRepository(AppDbContext context)
+public class LeagueRepository(AppDbContext context) : ILeagueRepository
 {
     public async Task<List<League>> GetAllAsync()
     {
@@ -23,7 +24,7 @@ public class LeagueRepository(AppDbContext context)
         return league;
     }
 
-    public async Task<bool> LeagueExistsAsync(Guid leagueId)
+    public async Task<bool> ExistsAsync(Guid leagueId)
     {
         return await context.Leagues.AnyAsync(l => l.Id == leagueId);
     }

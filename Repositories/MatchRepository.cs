@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using sports_api.Data;
+using sports_api.Interfaces;
 using sports_api.Models;
 
 namespace sports_api.Repositories;
 
-public class MatchRepository(AppDbContext context)
+public class MatchRepository(AppDbContext context) : IMatchRepository
 {
     public async Task<List<Match>> GetAllAsync()
     {

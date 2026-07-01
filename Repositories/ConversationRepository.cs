@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using sports_api.Data;
+using sports_api.Interfaces;
 using sports_api.Models;
 
 namespace sports_api.Repositories;
 
-public class ConversationRepository(AppDbContext context)
+public class ConversationRepository(AppDbContext context) : IConversationRepository
 {
     public async Task<Conversation?> GetByIdAsync(Guid id)
     {
