@@ -1,9 +1,9 @@
 using sports_api.Models;
-using sports_api.Repositories;
+using sports_api.Interfaces;
 
 namespace sports_api.Services;
 
-public class SportService(SportRepository repository)
+public class SportService(ISportRepository repository)
 {
     public async Task<List<Sport>> GetAllSportsAsync()
     {

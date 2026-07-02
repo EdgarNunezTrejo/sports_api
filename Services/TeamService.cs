@@ -1,9 +1,12 @@
 using sports_api.Models;
-using sports_api.Repositories;
+using sports_api.Interfaces;
 
 namespace sports_api.Services;
 
-public class TeamService(TeamRepository repository, LeagueRepository leagueRepository)
+public class TeamService(
+    ITeamRepository repository,
+    ILeagueRepository leagueRepository
+    )
 {
     public async Task<List<Team>> GetAllTeamsAsync()
     {

@@ -1,9 +1,13 @@
-using sports_api.Repositories;
+using sports_api.Interfaces;
 using sports_api.Models;
 
 namespace sports_api.Services;
 
-public class PlayerService(PlayerRepository playerRepository, PositionRepository positionRepository, TeamRepository teamRepository)
+public class PlayerService(
+    IPlayerRepository playerRepository,
+    IPositionRepository positionRepository,
+    ITeamRepository teamRepository
+    )
 {
     public async Task<List<Player>> GetAllPlayersAsync()
     {
@@ -14,8 +18,6 @@ public class PlayerService(PlayerRepository playerRepository, PositionRepository
     {
         return await playerRepository.GetByIdAsync(id);
     }
-
-    // Regresa un string con el error si algo falla, o null si todo bien
     public async Task<(Player? Player, string? Error)> CreatePlayerAsync(
         string name, bool isLeader, Guid teamId, Guid? positionId)
     {

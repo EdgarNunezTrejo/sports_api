@@ -1,13 +1,12 @@
 using sports_api.Models;
-using sports_api.Repositories;
-
+using sports_api.Interfaces;
 namespace sports_api.Services;
 
 public class ConversationService(
-    ConversationRepository conversationRepository,
-    ChatMessageRepository chatMessageRepository,
-    TeamRepository teamRepository,
-    PlayerRepository playerRepository)
+    IConversationRepository conversationRepository,
+    IChatMessageRepository chatMessageRepository,
+    ITeamRepository teamRepository,
+    IPlayerRepository playerRepository)
 {
     public async Task<Conversation?> GetConversationByIdAsync(Guid id)
     {

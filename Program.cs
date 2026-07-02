@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using sports_api.Data;
+using sports_api.Interfaces;
 using sports_api.Repositories;
 using sports_api.Services;
 var builder = WebApplication.CreateBuilder(args);
@@ -11,15 +12,15 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // Add repositories
-builder.Services.AddScoped<TeamRepository>();
-builder.Services.AddScoped<LeagueRepository>();
-builder.Services.AddScoped<PlayerRepository>();
-builder.Services.AddScoped<PositionRepository>();
-builder.Services.AddScoped<SportRepository>();
-builder.Services.AddScoped<MatchRepository>();
-builder.Services.AddScoped<MatchEventRepository>();
-builder.Services.AddScoped<ConversationRepository>();
-builder.Services.AddScoped<ChatMessageRepository>();
+builder.Services.AddScoped<ITeamRepository,TeamRepository>();
+builder.Services.AddScoped<ILeagueRepository,LeagueRepository>();
+builder.Services.AddScoped<IPlayerRepository,PlayerRepository>();
+builder.Services.AddScoped<IPositionRepository,PositionRepository>();
+builder.Services.AddScoped<ISportRepository,SportRepository>();
+builder.Services.AddScoped<IMatchRepository,MatchRepository>();
+builder.Services.AddScoped<IMatchEventRepository,MatchEventRepository>();
+builder.Services.AddScoped<IConversationRepository,ConversationRepository>();
+builder.Services.AddScoped<IChatMessageRepository,ChatMessageRepository>();
 
 // Add services
 builder.Services.AddScoped<TeamService>();

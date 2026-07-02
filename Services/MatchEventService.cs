@@ -1,12 +1,11 @@
 using sports_api.Models;
-using sports_api.Repositories;
-
+using sports_api.Interfaces;
 namespace sports_api.Services;
 
 public class MatchEventService(
-    MatchEventRepository matchEventRepository,
-    MatchRepository matchRepository,
-    PlayerRepository playerRepository)
+    IMatchEventRepository matchEventRepository,
+    IMatchRepository matchRepository,
+    IPlayerRepository playerRepository)
 {
     public async Task<List<MatchEvent>> GetMatchEventsAsync(Guid matchId)
     {
