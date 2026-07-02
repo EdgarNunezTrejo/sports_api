@@ -18,6 +18,7 @@ public class AppDbContext : DbContext
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<Conversation> Conversations => Set<Conversation>();
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,7 +34,7 @@ public class AppDbContext : DbContext
         .HasForeignKey(m => m.AwayTeamId)
         .OnDelete(DeleteBehavior.Restrict);
 
-        // MatchEvent: FK a Team (no ambiguo, pero el delete behavior conviene fijarlo igual)
+        // MatchEvent: FK to Team (not ambiguous, but we want to restrict delete behavior)
         modelBuilder.Entity<MatchEvent>()
             .HasOne(me => me.Team)
             .WithMany()
@@ -47,7 +48,7 @@ public class AppDbContext : DbContext
             .HasForeignKey(me => me.PlayerId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // Conversation: dos FKs a Team (TeamA/TeamB) — ambiguo, necesita Fluent API
+        // Conversation: two FKs to Team (TeamA/TeamB) — ambiguos, it needs Fluent API
         modelBuilder.Entity<Conversation>()
             .HasOne(c => c.TeamA)
             .WithMany()
@@ -60,11 +61,15 @@ public class AppDbContext : DbContext
             .HasForeignKey(c => c.TeamBId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // ChatMessage: FK a SenderPlayer (no ambiguo, pero fijamos delete behavior)
+        // ChatMessage: FK to SenderPlayer (not ambiguous, but we want to restrict delete behavior)
         modelBuilder.Entity<ChatMessage>()
             .HasOne(cm => cm.SenderPlayer)
             .WithMany()
             .HasForeignKey(cm => cm.SenderPlayerId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
     }
 }

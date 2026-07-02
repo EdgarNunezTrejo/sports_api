@@ -39,4 +39,10 @@ public class TeamRepository(AppDbContext context) : ITeamRepository
             .Select(t => (Guid?)t.LeagueId)
             .FirstOrDefaultAsync();
     }
+
+    public async Task<Team?> GetByInviteCodeAsync(string inviteCode)
+    {
+        return await context.Teams
+            .FirstOrDefaultAsync(t => t.InviteCode == inviteCode.ToUpper());
+    }
 }

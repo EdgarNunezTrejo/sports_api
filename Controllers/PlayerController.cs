@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using sports_api.DTOs;
 using sports_api.Services;
@@ -6,6 +7,7 @@ namespace sports_api.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[Authorize]
 public class PlayerController(PlayerService playerService) : ControllerBase
 {
 

@@ -10,4 +10,7 @@ public class Player
     public Team? Team { get; set; }
     public Guid? PositionId { get; set; }  // nullable porque es opcional
     public Position? Position { get; set; }
+
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
 }

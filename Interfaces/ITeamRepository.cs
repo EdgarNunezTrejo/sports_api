@@ -9,4 +9,5 @@ public interface ITeamRepository
     Task<Guid?> GetLeagueIdAsync(Guid teamId);
     Task<Guid?> GetSportIdAsync(Guid teamId);
     Task<Team> CreateAsync(Team team);
+    Task<Team?> GetByInviteCodeAsync(string inviteCode);
 }
