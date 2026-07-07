@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi;
+using sports_api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,6 +92,41 @@ builder.Services.AddOpenApi(options =>
 });
 
 var app = builder.Build();
+
+// Apply migrations and create the database if it doesn't exist
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+    
+    await db.Database.MigrateAsync();
+    
+    // Seed admin user
+    var adminEmail = config["Seed:AdminEmail"];
+    var adminPassword = config["Seed:AdminPassword"];
+
+    if (adminEmail != null && adminPassword != null)
+    {
+        if (!db.Users.Any(u => u.Email == adminEmail))
+        {
+            db.Users.Add(new User
+            {
+                Email = adminEmail.ToLower(),
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword),
+                Role = UserRole.Admin,
+                Provider = AuthProvider.Email
+            });
+            await db.SaveChangesAsync();
+        }
+    }
+}
+
 app.UseAuthorization();
 app.UseAuthentication();
 
