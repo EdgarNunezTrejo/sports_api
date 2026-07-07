@@ -11,8 +11,9 @@ using sports_api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+var port = Environment.GetEnvironmentVariable("PORT");
+if (port != null)
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Add services to the container.
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -93,21 +94,13 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-// Apply migrations and create the database if it doesn't exist
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.MigrateAsync();
-}
-
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-    
+
     await db.Database.MigrateAsync();
-    
-    // Seed admin user
+
     var adminEmail = config["Seed:AdminEmail"];
     var adminPassword = config["Seed:AdminPassword"];
 
@@ -127,8 +120,8 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

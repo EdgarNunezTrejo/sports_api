@@ -7,7 +7,7 @@ namespace sports_api.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-[Authorize]
+[Authorize(Roles = "Player,Admin")]
 public class PlayerController(PlayerService playerService) : ControllerBase
 {
 

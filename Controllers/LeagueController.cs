@@ -8,7 +8,7 @@ namespace sports_api.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class LeagueController(LeagueService leagueService) : ControllerBase
 {
     [HttpGet]
