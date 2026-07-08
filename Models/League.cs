@@ -12,4 +12,5 @@ public class League
     public List<Match> Matches { get; set; } = new();
     public Guid SportId { get; set; }
     public Sport? Sport { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
 }

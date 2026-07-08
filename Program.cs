@@ -9,11 +9,22 @@ using System.Text;
 using Microsoft.OpenApi;
 using sports_api.Models;
 using sports_api.Hubs;
+using CloudinaryDotNet;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add SignalR.
 builder.Services.AddSignalR();
+// Add Cloudinary configuration
+var cloudinaryConfig = builder.Configuration.GetSection("Cloudinary");
+var account = new Account(
+    cloudinaryConfig["CloudName"],
+    cloudinaryConfig["ApiKey"],
+    cloudinaryConfig["ApiSecret"]
+);
+
+var cloudinary = new Cloudinary(account) { Api = { Secure = true } };
+builder.Services.AddSingleton(cloudinary);
 
 var port = Environment.GetEnvironmentVariable("PORT");
 if (port != null)
