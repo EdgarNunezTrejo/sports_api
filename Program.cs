@@ -25,6 +25,7 @@ var account = new Account(
 
 var cloudinary = new Cloudinary(account) { Api = { Secure = true } };
 builder.Services.AddSingleton(cloudinary);
+builder.Services.AddSingleton<ICloudinaryUploadApi>(cloudinary);
 
 var port = Environment.GetEnvironmentVariable("PORT");
 if (port != null)
@@ -94,6 +95,7 @@ builder.Services.AddScoped<MatchService>();
 builder.Services.AddScoped<MatchEventService>();
 builder.Services.AddScoped<ConversationService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UploadService>();
 
 
 // DB Context
