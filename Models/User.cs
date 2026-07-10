@@ -27,4 +27,5 @@ public class User
     public List<Player> Players { get; set; } = [];
 
     public string AvatarUrl { get; set; } = string.Empty;
+    public bool AcceptsTermsAndConditions { get; set; }
 }
