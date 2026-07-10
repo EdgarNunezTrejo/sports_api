@@ -1,5 +1,12 @@
 namespace sports_api.Models;
 
+public enum PlayerStatus
+{
+    Active,
+    Inactive,
+    Suspended
+}
+
 public class Player
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
@@ -13,4 +20,5 @@ public class Player
 
     public Guid UserId { get; set; }
     public User? User { get; set; }
+    public PlayerStatus Status {get; set;} = PlayerStatus.Active;
 }

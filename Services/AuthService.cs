@@ -39,7 +39,9 @@ public class AuthService(
             Provider = AuthProvider.Email,
             Platform = dto.Platform,
             Role = UserRole.Player,
-            AcceptsTermsAndConditions = dto.AcceptsTermsAndConditions
+            AcceptsTermsAndConditions = dto.AcceptsTermsAndConditions,
+            Name = dto.Name,
+            LastName = dto.LastName
         };
 
         var created = await userRepository.CreateAsync(user);

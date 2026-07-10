@@ -40,7 +40,8 @@ public class PlayerService(
             Name = name,
             IsLeader = isLeader,
             TeamId = teamId,
-            PositionId = positionId
+            PositionId = positionId,
+            Status = PlayerStatus.Active
         };
 
         var created = await playerRepository.CreateAsync(player);

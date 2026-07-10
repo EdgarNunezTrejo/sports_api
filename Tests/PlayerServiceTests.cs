@@ -157,4 +157,31 @@ public class PlayerServiceTests
         Assert.Equal("Edgar", player.Name);
         Assert.Equal(teamId, player.TeamId);
     }
+
+    [Fact]
+    public async Task CreatePlayerAsync_WhenValidData_SetsStatusToActive()
+    {
+        // Arrange
+        var teamId = Guid.NewGuid();
+        var sportId = Guid.NewGuid();
+
+        _teamRepoMock
+            .Setup(r => r.GetSportIdAsync(teamId))
+            .ReturnsAsync(sportId);
+
+        Player? capturedPlayer = null;
+        _playerRepoMock
+            .Setup(r => r.CreateAsync(It.IsAny<Player>()))
+            .Callback<Player>(p => capturedPlayer = p)
+            .ReturnsAsync(() => capturedPlayer!);
+
+        // Act
+        var (player, error) = await _sut.CreatePlayerAsync("Edgar", false, teamId, null);
+
+        // Assert
+        Assert.Null(error);
+        Assert.NotNull(player);
+        Assert.Equal(PlayerStatus.Active, player.Status);
+        Assert.Equal(PlayerStatus.Active, capturedPlayer?.Status);
+    }
 }

@@ -7,6 +7,7 @@ public class PlayerResponseDto
     public bool IsLeader { get; set; }
     public Guid TeamId { get; set; }
     public Guid? PositionId { get; set; }
+    public string Status {get; set;} = string.Empty;
 }
 
 public class CreatePlayerDto
