@@ -6,7 +6,7 @@ using sports_api.Services;
 namespace sports_api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [AllowAnonymous]
 public class AuthController(AuthService authService) : ControllerBase
 {

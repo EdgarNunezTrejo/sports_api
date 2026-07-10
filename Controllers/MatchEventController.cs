@@ -6,7 +6,7 @@ using sports_api.Services;
 namespace sports_api.Controllers;
 
 [ApiController]
-[Route("api/matches/{matchId}/events")]
+[Route("api/v1/matches/{matchId}/events")]
 [Authorize(Roles = "Player,Admin")]
 public class MatchEventController(MatchEventService matchEventService) : ControllerBase
 {
