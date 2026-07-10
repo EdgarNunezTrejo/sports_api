@@ -9,5 +9,6 @@ public class Team
     public Guid LeagueId {get; set;}
     public League League {get; set;} = new();
 
-    public List<Player> Players {get; set;} = new();
+    public List<Player> Players {get; set;} = [];
+    public string LogoUrl { get; set; } = string.Empty;
 }

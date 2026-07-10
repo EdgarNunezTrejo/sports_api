@@ -24,5 +24,8 @@ public class User
     public UserRole Role { get; set; } = UserRole.Player;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public List<Player> Players { get; set; } = new();
+    public List<Player> Players { get; set; } = [];
+
+    public string AvatarUrl { get; set; } = string.Empty;
+    public bool AcceptsTermsAndConditions { get; set; }
 }

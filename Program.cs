@@ -8,11 +8,28 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi;
 using sports_api.Models;
+using sports_api.Hubs;
+using CloudinaryDotNet;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+// Add SignalR.
+builder.Services.AddSignalR();
+// Add Cloudinary configuration
+var cloudinaryConfig = builder.Configuration.GetSection("Cloudinary");
+var account = new Account(
+    cloudinaryConfig["CloudName"],
+    cloudinaryConfig["ApiKey"],
+    cloudinaryConfig["ApiSecret"]
+);
+
+var cloudinary = new Cloudinary(account) { Api = { Secure = true } };
+builder.Services.AddSingleton(cloudinary);
+builder.Services.AddSingleton<ICloudinaryUploadApi>(cloudinary);
+
+var port = Environment.GetEnvironmentVariable("PORT");
+if (port != null)
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Add services to the container.
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -32,7 +49,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(secretKey))
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/hubs"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
     });
+
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
@@ -59,6 +95,7 @@ builder.Services.AddScoped<MatchService>();
 builder.Services.AddScoped<MatchEventService>();
 builder.Services.AddScoped<ConversationService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UploadService>();
 
 
 // DB Context
@@ -93,21 +130,13 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-// Apply migrations and create the database if it doesn't exist
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.MigrateAsync();
-}
-
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-    
+
     await db.Database.MigrateAsync();
-    
-    // Seed admin user
+
     var adminEmail = config["Seed:AdminEmail"];
     var adminPassword = config["Seed:AdminPassword"];
 
@@ -127,8 +156,8 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -140,5 +169,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.Run();

@@ -35,4 +35,10 @@ public class PlayerRepository(AppDbContext context) : IPlayerRepository
         return await context.Players
             .AnyAsync(p => p.Id == playerId && p.IsLeader);
     }
+
+    public async Task<bool> IsLeaderOfTeamAsync(Guid userId, Guid teamId)
+    {
+        return await context.Players
+            .AnyAsync(p => p.UserId == userId && p.TeamId == teamId && p.IsLeader);
+    }
 }

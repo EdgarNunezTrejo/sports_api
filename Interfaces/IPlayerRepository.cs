@@ -9,4 +9,5 @@ public interface IPlayerRepository
     Task<bool> BelongsToTeamAsync(Guid playerId, Guid teamId);
     Task<bool> IsLeaderAsync(Guid playerId);
     Task<Player> CreateAsync(Player player);
+    Task<bool> IsLeaderOfTeamAsync(Guid userId, Guid teamId);
 }

@@ -15,6 +15,10 @@ public class AuthService(
 {
     public async Task<(AuthResponseDto? Response, string? Error)> RegisterAsync(RegisterDto dto)
     {
+        if (!dto.AcceptsTermsAndConditions)
+        {
+            return (null, "User must accept Terms and Conditions");
+        }
         // Verify that the email is not already registered
         var exists = await userRepository.ExistsAsync(dto.Email);
         if (exists)
@@ -34,7 +38,8 @@ public class AuthService(
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             Provider = AuthProvider.Email,
             Platform = dto.Platform,
-            Role = UserRole.Player
+            Role = UserRole.Player,
+            AcceptsTermsAndConditions = dto.AcceptsTermsAndConditions
         };
 
         var created = await userRepository.CreateAsync(user);

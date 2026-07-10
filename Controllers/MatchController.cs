@@ -7,7 +7,7 @@ namespace sports_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Player,Admin")]
 public class MatchController(MatchService matchService, MatchEventService matchEventService) : ControllerBase
 {
     [HttpGet]
