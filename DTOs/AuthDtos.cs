@@ -38,3 +38,10 @@ public class AuthResponseDto
     public string Role { get; set; } = string.Empty;
     public DateTime ExpiresAt { get; set; }
 }
+
+public class GoogleAuthDto
+{
+    [Required]
+    public string IdToken { get; set; } = string.Empty;
+    public string? Platform { get; set; }
+}

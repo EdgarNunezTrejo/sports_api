@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Google.Apis.Auth;
 using Microsoft.IdentityModel.Tokens;
 using sports_api.DTOs;
 using sports_api.Interfaces;
@@ -101,5 +102,44 @@ public class AuthService(
             Role = user.Role.ToString(),
             ExpiresAt = expiration
         };
+    }
+
+    public async Task<(AuthResponseDto? Response, string? Error)> GoogleAuthAsync(GoogleAuthDto dto)
+    {
+        GoogleJsonWebSignature.Payload payload;
+        try
+        {
+            var settings = new GoogleJsonWebSignature.ValidationSettings
+            {
+                Audience = [configuration["Google:ClientId"]]
+            };
+            payload = await GoogleJsonWebSignature.ValidateAsync(dto.IdToken, settings);
+        }
+        catch
+        {
+            return (null, "Invalid Google token");
+        }
+
+        var user = await userRepository.GetByEmailAsync(payload.Email);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                Email = payload.Email.ToLower(),
+                Name = payload.GivenName ?? string.Empty,
+                LastName = payload.FamilyName ?? string.Empty,
+                Provider = AuthProvider.Google,
+                ProviderId = payload.Subject,
+                Platform = dto.Platform,
+                Role = UserRole.Player,
+                AvatarUrl = payload.Picture,
+                AcceptsTermsAndConditions = true,
+            };
+            await userRepository.CreateAsync(user);
+        }
+
+        var token = GenerateToken(user);
+        return (token, null);
     }
 }

@@ -31,4 +31,15 @@ public class AuthController(AuthService authService) : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpPost("google")]
+    public async Task<ActionResult<AuthResponseDto>> GoogleAuth(GoogleAuthDto dto)
+    {
+        var (response, error) = await authService.GoogleAuthAsync(dto);
+
+        if (error != null)
+            return BadRequest(error);
+
+        return Ok(response);
+    }
 }
