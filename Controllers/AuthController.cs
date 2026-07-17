@@ -42,4 +42,15 @@ public class AuthController(AuthService authService) : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpPost("apple")]
+    public async Task<ActionResult<AuthResponseDto>> AppleAuth(AppleAuthDto dto)
+    {
+        var (response, error) = await authService.AppleAuthAsync(dto);
+
+        if(error != null)
+            return BadRequest(error);
+
+        return Ok(response);
+    }
 }

@@ -12,7 +12,9 @@ namespace sports_api.Services;
 public class AuthService(
     IUserRepository userRepository,
     ITeamRepository teamRepository,
-    IConfiguration configuration)
+    IConfiguration configuration,
+    IHttpClientFactory httpClientFactory
+    )
 {
     public async Task<(AuthResponseDto? Response, string? Error)> RegisterAsync(RegisterDto dto)
     {
@@ -137,6 +139,70 @@ public class AuthService(
                 AcceptsTermsAndConditions = true,
             };
             await userRepository.CreateAsync(user);
+        }
+
+        var token = GenerateToken(user);
+        return (token, null);
+    }
+
+    public async Task<(AuthResponseDto? response, string? Error)> AppleAuthAsync(AppleAuthDto dto)
+    {
+        var httpClient = httpClientFactory.CreateClient();
+        var response = await httpClient.GetStringAsync("https://appleid.apple.com/auth/keys");
+        var jwks = JsonWebKeySet.Create(response);
+
+        var validationParams = new TokenValidationParameters
+        {
+            ValidIssuer = "https://appleid.apple.com",
+            ValidAudience = "com.eddnunez.matchters", // tu bundle ID
+            IssuerSigningKeys = jwks.GetSigningKeys(),
+            ValidateIssuerSigningKey = true,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+        };
+
+        ClaimsPrincipal principal;
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            principal = handler.ValidateToken(dto.IdToken, validationParams, out _);
+        }
+        catch
+        {
+            return (null, "Invalid Apple token");
+        }
+
+        var email = principal.FindFirstValue(ClaimTypes.Email)
+             ?? principal.FindFirstValue("email");
+        var sub = principal.FindFirstValue(ClaimTypes.NameIdentifier)
+               ?? principal.FindFirstValue("sub");
+
+        if (email == null || sub == null)
+            return (null, "Could not extract user info from Apple token");
+
+
+        var user = await userRepository.GetByEmailAsync(email);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                Email = email.ToLower(),
+                Name = dto.Name ?? string.Empty,
+                LastName = dto.LastName ?? string.Empty,
+                Provider = AuthProvider.Apple,
+                ProviderId = sub,
+                Platform = dto.Platform,
+                Role = UserRole.Player,
+                AcceptsTermsAndConditions = true,
+            };
+            await userRepository.CreateAsync(user);
+        }
+        else if (user.ProviderId == null)
+        {
+            user.ProviderId = sub;
+            await userRepository.UpdateAsync(user);
         }
 
         var token = GenerateToken(user);

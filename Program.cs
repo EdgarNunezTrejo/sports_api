@@ -72,6 +72,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
+builder.Services.AddHttpClient();
 
 // Add repositories
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
